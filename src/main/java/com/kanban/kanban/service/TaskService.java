@@ -2,6 +2,7 @@ package com.kanban.kanban.service;
 
 import com.kanban.kanban.model.Board;
 import com.kanban.kanban.model.Sprint;
+import com.kanban.kanban.model.Status;
 import com.kanban.kanban.model.Task;
 import com.kanban.kanban.model.User;
 import com.kanban.kanban.repository.BoardRepository;
@@ -10,7 +11,12 @@ import com.kanban.kanban.repository.TaskRepository;
 import com.kanban.kanban.repository.UserRepository;
 import com.kanban.kanban.viewmodel.TaskVM;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -44,5 +50,17 @@ public class TaskService {
         taskToSave.setOwner(savedUser);
 
         taskRepository.save(taskToSave);
+    }
+
+    public List<Task> listBySprint(Long sprintId) {
+        Optional<Sprint> sprint = sprintRepository.findById(sprintId);
+        if (sprint.isPresent()) {
+            List<Status> activeStatusList = List.of(Status.TODO, Status.DOING, Status.DONE);
+            return taskRepository.findAllBySprintIdAndStatusIn(sprintId, activeStatusList);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND
+            );
+        }
     }
 }
