@@ -63,4 +63,18 @@ public class TaskService {
             );
         }
     }
+
+    public void moveTask(Long taskId, Status newStatus) {
+        Optional<Task> task = taskRepository.findById(taskId);
+        if (task.isPresent()) {
+            Task savedTask = task.get();
+            savedTask.setStatus(newStatus);
+            taskRepository.save(savedTask);
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND
+            );
+        }
+    }
+
 }
