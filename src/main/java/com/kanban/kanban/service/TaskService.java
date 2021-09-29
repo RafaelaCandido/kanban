@@ -77,4 +77,13 @@ public class TaskService {
         }
     }
 
+    public List<Task> listByBoard(Long boardId) {
+        Optional<Board> board = boardRepository.findById(boardId);
+        if (board.isPresent()) {
+            return taskRepository.findAllByBoardIdAndStatus(boardId, Status.BACKLOG);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }
